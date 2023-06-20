@@ -131,15 +131,14 @@ posterdraw = ImageDraw.Draw(poster)
 posterdraw.text((325,410),keyword,anchor='ms',font=font_large)
 
 wrappedtext = textwrap.wrap(bottomtext,width=46)
-y = 440
+y = 435
 for i in wrappedtext:
     posterdraw.text((325,y),i,anchor='ms',font=font_small)
     y = y + 20
 
-
-poster.save('poster.png')
-
-poster.show()
+poster_filename = keyword.lower() 
+poster_filename = poster_filename + ".png"
+poster.save(poster_filename)
 
 
 """

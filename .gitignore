@@ -1,4 +1,5 @@
 
 apikey.txt
-genimage.png
-poster.png
+*.png
+!template.png
+
