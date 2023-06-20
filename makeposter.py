@@ -4,6 +4,7 @@ import io
 import base64
 import openai
 import argparse
+import textwrap
 from PIL import Image, PngImagePlugin, ImageFont, ImageDraw
 
 sd_url = "http://127.0.0.1:7860"
@@ -28,11 +29,10 @@ def generateimage(apitype,payload):
     response = requests.post(url=f'{sd_url}/sdapi/v1/' + apitype, json=payload)
     r = response.json()
     if 'images' in r:
-        print('found images!')
+        return r['images'][0]
     else:
         print('ERROR!')
         print(r)
-    return r['images'][0]
 
 def saveb64(imgb64, filename=None):
     image = Image.open(io.BytesIO(base64.b64decode(imgb64.split(",",1)[0])))
@@ -96,11 +96,6 @@ sdprompt = result_split[1].strip()
 secondsplit = result_split[0].split(":",1)
 bottomtext = secondsplit[1].strip()
 
-print(keyword)
-print(bottomtext)
-print(sdprompt)
-
-print("editing strings")
 
 keyword = keyword.upper()
 bottomtext = bottomtext.upper()
@@ -127,7 +122,24 @@ genimage = saveb64(imageb64, 'genimage.png')
 
 poster = Image.open('template.png')
 poster.paste(genimage,(69,30))
+
+
+font_large = ImageFont.truetype(font='NEWBASKE.ttf', size=64)
+font_small = ImageFont.truetype(font='NEWBASKE.ttf', size=22)
+posterdraw = ImageDraw.Draw(poster)
+
+posterdraw.text((325,410),keyword,anchor='ms',font=font_large)
+
+wrappedtext = textwrap.wrap(bottomtext,width=46)
+y = 440
+for i in wrappedtext:
+    posterdraw.text((325,y),i,anchor='ms',font=font_small)
+    y = y + 20
+
+
 poster.save('poster.png')
+
+poster.show()
 
 
 """
