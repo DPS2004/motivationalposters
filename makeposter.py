@@ -16,7 +16,7 @@ args = argParser.parse_args()
 
 
 demotivate = args.demotivate
-prompt = args.prompt
+keyword = args.prompt
 
 apifile = open('apikey.txt')
 openai.api_key = apifile.read()
@@ -51,6 +51,74 @@ def chatgpt(m):
     )
     return response.choices[0].message.content
 
+def motivationalprompt():
+    sysmessage = ("Your job is to generate motivational phrases. "
+    "A user will enter a short word or phrase, and you must start your phrase with it, along with a colon (:). " 
+    "After the phrase, put a $ and enter a description of a photograph that might fit your phrase if it were printed on a poster.")
+    return chatgpt([
+        {"role": "system", "content":    sysmessage},
+        {"role": "user", "content":      "solution"},
+        {"role": "assistant", "content": "Solution: To every problem there is a solution, whether you know it or not.$Two hands trying to fit puzzle pieces together"},
+        {"role": "user", "content":      "leaders"},
+        {"role": "assistant", "content": "Leaders: One without any followers is just someone taking a walk.$Penguins in the arctic all marching in a line"},
+        {"role": "user", "content":      keyword}
+    ])
+    
+def demotivationalprompt():
+    sysmessage = ("Your job is to generate mean-spirited snarky demotivational phrases. "
+    "A user will enter a short word or phrase, and you must start your phrase with it, along with a colon (:). " 
+    "After the phrase, put a $ and enter a description of a photograph that might fit your phrase if it were printed on a poster.")
+    return chatgpt([
+        {"role": "system", "content":    sysmessage},
+        {"role": "user", "content":      "paranoia"},
+        {"role": "assistant", "content": "Paranoia: If it feels like everyone is out to get you, they probably are.$A woman in a trench coat with spy goggles"},
+        {"role": "user", "content":      "practice"},
+        {"role": "assistant", "content": "Practice: No matter how much you do it, you'll probably never be that good.$A football player trying to catch a ball as it flies through the air"},
+        {"role": "user", "content":      keyword}
+    ])
+    
+sdprompt = "Large red text reading ERROR"
+bottomtext = "We all make mistakes!"
+
+result = "placeholder: holds your place.$a placeholder"
+if not demotivate:
+    result = motivationalprompt()
+else:
+    result = demotivationalprompt()
+
+result_split = result.split("$",1)
+sdprompt = result_split[1].strip()
+secondsplit = result_split[0].split(":",1)
+bottomtext = secondsplit[1].strip()
+
+print(keyword)
+print(bottomtext)
+print(sdprompt)
+
+print("editing strings")
+
+keyword = keyword.upper()
+bottomtext = bottomtext.upper()
+if bottomtext[-1] == ".":
+    bottomtext = bottomtext[:-1]
+sdprompt = sdprompt.lower()
+sdprompt = sdprompt.replace(".","")
+sdprompt = sdprompt + " photograph realistic"
+
+print(keyword)
+print(bottomtext)
+print(sdprompt)
+
+imageb64 = generateimage('txt2img', {
+    "prompt": sdprompt,
+    "steps": 20,
+    "width": 512,
+    "height": 512,
+    "override_settings": {
+        "sd_model_checkpoint": "v1-5-pruned-emaonly.safetensors [6ce0161689]"
+    }
+})
+saveb64(imageb64, 'posterimage.png')
 
 
 """
