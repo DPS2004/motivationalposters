@@ -21,7 +21,6 @@ prompt = args.prompt
 apifile = open('apikey.txt')
 openai.api_key = apifile.read()
 
-
 def generateimage(apitype,payload):
     response = requests.post(url=f'{sd_url}/sdapi/v1/' + apitype, json=payload)
     r = response.json()
@@ -45,7 +44,22 @@ def loadb64(filename):
     #imgb64 = imgb64[2:-1]
     return imgb64
     
+def chatgpt(m):
+    response = openai.ChatCompletion.create(
+        model = "gpt-3.5-turbo",
+        messages = m
+    )
+    return response.choices[0].message.content
+
+
+
 """
+
+print(chatgpt([
+    {"role": "system", "content": "You are a helpful assistant."},
+    {"role": "user", "content": "What was the name of the first cat in space?"}
+]))
+
 payload1 = {
     "prompt": prompt,
     "steps": 20,
