@@ -4,7 +4,7 @@ import io
 import base64
 import openai
 import argparse
-from PIL import Image, PngImagePlugin
+from PIL import Image, PngImagePlugin, ImageFont, ImageDraw
 
 sd_url = "http://127.0.0.1:7860"
 
@@ -21,6 +21,9 @@ keyword = args.prompt
 apifile = open('apikey.txt')
 openai.api_key = apifile.read()
 
+
+
+
 def generateimage(apitype,payload):
     response = requests.post(url=f'{sd_url}/sdapi/v1/' + apitype, json=payload)
     r = response.json()
@@ -31,9 +34,11 @@ def generateimage(apitype,payload):
         print(r)
     return r['images'][0]
 
-def saveb64(imgb64, filename):
+def saveb64(imgb64, filename=None):
     image = Image.open(io.BytesIO(base64.b64decode(imgb64.split(",",1)[0])))
-    image.save(filename)
+    if filename != None:
+        image.save(filename)
+    return image
     
 
 def loadb64(filename):
@@ -113,12 +118,16 @@ imageb64 = generateimage('txt2img', {
     "prompt": sdprompt,
     "steps": 20,
     "width": 512,
-    "height": 512,
+    "height": 320,
     "override_settings": {
         "sd_model_checkpoint": "v1-5-pruned-emaonly.safetensors [6ce0161689]"
     }
 })
-saveb64(imageb64, 'posterimage.png')
+genimage = saveb64(imageb64, 'genimage.png')
+
+poster = Image.open('template.png')
+poster.paste(genimage,(69,30))
+poster.save('poster.png')
 
 
 """
