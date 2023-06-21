@@ -3,6 +3,8 @@ A program written in Python to automatically generate both motivational and demo
 
 ## Setup
 Install requirements with `pip install -r requirements.txt`
+Create a text file named `apikey.txt`, and put a valid [OpenAI API key](https://platform.openai.com/overview) inside of it.
+Install [stable-diffusion-webui](https://github.com/AUTOMATIC1111/stable-diffusion-webui), and set up the API as outlined [in this guide](https://github.com/AUTOMATIC1111/stable-diffusion-webui/wiki/API)
 
 ## Usage
 ```
